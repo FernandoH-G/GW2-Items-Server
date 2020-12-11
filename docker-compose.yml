@@ -1,0 +1,9 @@
+version: '3.9' 
+
+services: 
+  gql-server:
+    build: ./api
+    volumes:
+      - ./api:/app
+    ports:
+      - 5001:80
