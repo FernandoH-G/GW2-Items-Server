@@ -5,7 +5,7 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 
 	"github.com/FernandoH-G/gw2-items-server/graph/generated"
 	"github.com/FernandoH-G/gw2-items-server/graph/model"
@@ -20,23 +20,23 @@ func (r *queryResolver) GetItemByID(ctx context.Context, id string) (*model.Item
 	buyPrice := itemTP.ParsePrice(tpItem.Results[0].Buy)
 
 	resultItem := &model.Item{
-		ID:     fmt.Sprint(tpItem.Results[0].ID),
+		ID:     strconv.Itoa(tpItem.Results[0].ID),
 		Name:   tpItem.Results[0].Name,
 		ImgURL: tpItem.Results[0].ImgURL,
 		Sell: &model.Price{
-			Gold: sellPrice.Gold,
+			Gold:   sellPrice.Gold,
 			Silver: sellPrice.Silver,
 			Copper: sellPrice.Copper,
 		},
 		Buy: &model.Price{
-			Gold: buyPrice.Gold,
+			Gold:   buyPrice.Gold,
 			Silver: buyPrice.Silver,
 			Copper: buyPrice.Copper,
 		},
-		Description: &infoItem[0].Description ,
-		Type: infoItem[0].Type,
-		Rarity: infoItem[0].Rarity,
-		Level: fmt.Sprint(infoItem[0].Level),
+		Description: &infoItem[0].Description,
+		Type:        infoItem[0].Type,
+		Rarity:      infoItem[0].Rarity,
+		Level:       strconv.Itoa(infoItem[0].Level),
 	}
 
 	return resultItem, nil

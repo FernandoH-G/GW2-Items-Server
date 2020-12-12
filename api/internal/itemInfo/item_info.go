@@ -36,7 +36,7 @@ func QueryInfo(id string) []ItemInfo {
 	if err != nil {
 		fmt.Print("Unmarshal error: ", err, "\n")
 	}
-	fmt.Println("info item: ", item)
+	fmt.Println("Info Item: ", item)
 	return item
 
 }

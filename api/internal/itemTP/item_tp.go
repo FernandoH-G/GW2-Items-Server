@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type EquipmentTP struct {
@@ -28,7 +29,6 @@ type ItemPrice struct {
 
 // UnmarshalJSON is my custom unmarshal for the GW2TP API.
 func (i *ItemTP) UnmarshalJSON(b []byte) error {
-	fmt.Println("Using ItemTP Unmarshal!")
 	arr := []interface{}{&i.ID, &i.Name, &i.ImgURL, &i.Buy, &i.Sell}
 	err := json.Unmarshal(b, &arr)
 
@@ -63,12 +63,12 @@ func QueryTP(id string) EquipmentTP {
 	if err != nil {
 		fmt.Print("Unmarshal error: ", err, "\n")
 	}
-	fmt.Println("item: ", item)
+	fmt.Println("TP Item: ", item)
 	return item
 }
 
 func ParsePrice(price int) ItemPrice {
-	priceStr := fmt.Sprint(price)
+	priceStr := strconv.Itoa(price)
 	fmt.Println("priceStr: ", priceStr)
 	priceLen := len(priceStr)
 	itemPrice := ItemPrice{
@@ -79,13 +79,13 @@ func ParsePrice(price int) ItemPrice {
 
 	switch {
 	case priceLen > 4:
-		itemPrice.Gold = priceStr[0:priceLen-4]
-		itemPrice.Silver= priceStr[priceLen-4:priceLen-2]
-		itemPrice.Copper = priceStr[priceLen-2:priceLen]
+		itemPrice.Gold = priceStr[0 : priceLen-4]
+		itemPrice.Silver = priceStr[priceLen-4 : priceLen-2]
+		itemPrice.Copper = priceStr[priceLen-2 : priceLen]
 		break
 	case 4 >= priceLen && priceLen > 2:
-		itemPrice.Silver= priceStr[0:priceLen-2]
-		itemPrice.Copper = priceStr[priceLen-2:priceLen]
+		itemPrice.Silver = priceStr[0 : priceLen-2]
+		itemPrice.Copper = priceStr[priceLen-2 : priceLen]
 		break
 	case 2 >= priceLen && priceLen > 0:
 		itemPrice.Copper = priceStr[0:priceLen]
