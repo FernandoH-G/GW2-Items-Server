@@ -11,12 +11,12 @@ import (
 	"github.com/FernandoH-G/gw2-items-server/graph/generated"
 )
 
-const defaultPort = "80"
+const DEFAULT_PORT = "80"
 
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = defaultPort
+		port = DEFAULT_PORT
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))

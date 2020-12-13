@@ -4,6 +4,12 @@
 
 type Query {
   getItemByID(id: String!): Item!
+  getItemNames: [ItemNamePair!]!
+}
+
+type ItemNamePair {
+  id: ID!
+  name: String!
 }
 
 type Price {

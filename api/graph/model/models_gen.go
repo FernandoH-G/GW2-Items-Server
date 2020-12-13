@@ -14,6 +14,11 @@ type Item struct {
 	Level       string  `json:"level"`
 }
 
+type ItemNamePair struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type Price struct {
 	Gold   string `json:"gold"`
 	Silver string `json:"silver"`

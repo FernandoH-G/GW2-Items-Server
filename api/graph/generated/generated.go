@@ -54,6 +54,11 @@ type ComplexityRoot struct {
 		Type        func(childComplexity int) int
 	}
 
+	ItemNamePair struct {
+		ID   func(childComplexity int) int
+		Name func(childComplexity int) int
+	}
+
 	Price struct {
 		Copper func(childComplexity int) int
 		Gold   func(childComplexity int) int
@@ -61,12 +66,14 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetItemByID func(childComplexity int, id string) int
+		GetItemByID  func(childComplexity int, id string) int
+		GetItemNames func(childComplexity int) int
 	}
 }
 
 type QueryResolver interface {
 	GetItemByID(ctx context.Context, id string) (*model.Item, error)
+	GetItemNames(ctx context.Context) ([]*model.ItemNamePair, error)
 }
 
 type executableSchema struct {
@@ -147,6 +154,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Item.Type(childComplexity), true
 
+	case "ItemNamePair.id":
+		if e.complexity.ItemNamePair.ID == nil {
+			break
+		}
+
+		return e.complexity.ItemNamePair.ID(childComplexity), true
+
+	case "ItemNamePair.name":
+		if e.complexity.ItemNamePair.Name == nil {
+			break
+		}
+
+		return e.complexity.ItemNamePair.Name(childComplexity), true
+
 	case "Price.copper":
 		if e.complexity.Price.Copper == nil {
 			break
@@ -179,6 +200,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetItemByID(childComplexity, args["id"].(string)), true
+
+	case "Query.getItemNames":
+		if e.complexity.Query.GetItemNames == nil {
+			break
+		}
+
+		return e.complexity.Query.GetItemNames(childComplexity), true
 
 	}
 	return 0, false
@@ -236,6 +264,12 @@ var sources = []*ast.Source{
 
 type Query {
   getItemByID(id: String!): Item!
+  getItemNames: [ItemNamePair!]!
+}
+
+type ItemNamePair {
+  id: ID!
+  name: String!
 }
 
 type Price {
@@ -254,21 +288,7 @@ type Item {
   type: String!
   rarity: String!
   level: String!
-}
-
-
-# type Query {
-#   todos: [Todo!]!
-# }
-
-# input NewTodo {
-#   text: String!
-#   userId: String!
-# }
-
-# type Mutation {
-#   createTodo(input: NewTodo!): Todo!
-# }`, BuiltIn: false},
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -656,6 +676,76 @@ func (ec *executionContext) _Item_level(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ItemNamePair_id(ctx context.Context, field graphql.CollectedField, obj *model.ItemNamePair) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ItemNamePair",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ItemNamePair_name(ctx context.Context, field graphql.CollectedField, obj *model.ItemNamePair) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ItemNamePair",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Price_gold(ctx context.Context, field graphql.CollectedField, obj *model.Price) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -801,6 +891,41 @@ func (ec *executionContext) _Query_getItemByID(ctx context.Context, field graphq
 	res := resTmp.(*model.Item)
 	fc.Result = res
 	return ec.marshalNItem2ᚖgithubᚗcomᚋFernandoHᚑGᚋgw2ᚑitemsᚑserverᚋgraphᚋmodelᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getItemNames(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetItemNames(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ItemNamePair)
+	fc.Result = res
+	return ec.marshalNItemNamePair2ᚕᚖgithubᚗcomᚋFernandoHᚑGᚋgw2ᚑitemsᚑserverᚋgraphᚋmodelᚐItemNamePairᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2033,6 +2158,38 @@ func (ec *executionContext) _Item(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var itemNamePairImplementors = []string{"ItemNamePair"}
+
+func (ec *executionContext) _ItemNamePair(ctx context.Context, sel ast.SelectionSet, obj *model.ItemNamePair) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, itemNamePairImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ItemNamePair")
+		case "id":
+			out.Values[i] = ec._ItemNamePair_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "name":
+			out.Values[i] = ec._ItemNamePair_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var priceImplementors = []string{"Price"}
 
 func (ec *executionContext) _Price(ctx context.Context, sel ast.SelectionSet, obj *model.Price) graphql.Marshaler {
@@ -2094,6 +2251,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getItemByID(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "getItemNames":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getItemNames(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -2401,6 +2572,53 @@ func (ec *executionContext) marshalNItem2ᚖgithubᚗcomᚋFernandoHᚑGᚋgw2�
 		return graphql.Null
 	}
 	return ec._Item(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNItemNamePair2ᚕᚖgithubᚗcomᚋFernandoHᚑGᚋgw2ᚑitemsᚑserverᚋgraphᚋmodelᚐItemNamePairᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ItemNamePair) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNItemNamePair2ᚖgithubᚗcomᚋFernandoHᚑGᚋgw2ᚑitemsᚑserverᚋgraphᚋmodelᚐItemNamePair(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNItemNamePair2ᚖgithubᚗcomᚋFernandoHᚑGᚋgw2ᚑitemsᚑserverᚋgraphᚋmodelᚐItemNamePair(ctx context.Context, sel ast.SelectionSet, v *model.ItemNamePair) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ItemNamePair(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPrice2ᚖgithubᚗcomᚋFernandoHᚑGᚋgw2ᚑitemsᚑserverᚋgraphᚋmodelᚐPrice(ctx context.Context, sel ast.SelectionSet, v *model.Price) graphql.Marshaler {
