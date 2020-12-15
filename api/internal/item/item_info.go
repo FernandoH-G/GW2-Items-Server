@@ -38,6 +38,11 @@ func (e *EquipmentInfo) QueryInfo(id string) error {
 	if err != nil {
 		return fmt.Errorf("item Unmarshal err:%w ", err)
 	}
+
+	if e.Items[0].Description == "" {
+		e.Items[0].Description = "No Description"
+	}
+
 	fmt.Println("Info Item: ", e.Items)
 	if err != nil {
 		return fmt.Errorf("item println err: %w", err)

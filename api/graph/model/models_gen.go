@@ -3,15 +3,15 @@
 package model
 
 type Item struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	ImgURL      string  `json:"imgURL"`
-	Sell        *Price  `json:"sell"`
-	Buy         *Price  `json:"buy"`
-	Description *string `json:"description"`
-	Type        string  `json:"type"`
-	Rarity      string  `json:"rarity"`
-	Level       string  `json:"level"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	ImgURL      string `json:"imgURL"`
+	Sell        *Price `json:"sell"`
+	Buy         *Price `json:"buy"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
+	Rarity      string `json:"rarity"`
+	Level       string `json:"level"`
 }
 
 type ItemNamePair struct {

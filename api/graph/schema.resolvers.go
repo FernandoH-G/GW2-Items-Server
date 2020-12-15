@@ -52,7 +52,7 @@ func (r *queryResolver) GetItemByID(ctx context.Context, id string) (*model.Item
 			Silver: buyPrice.Silver,
 			Copper: buyPrice.Copper,
 		},
-		Description: &infoItem.Items[0].Description,
+		Description: infoItem.Items[0].Description,
 		Type:        infoItem.Items[0].Type,
 		Rarity:      infoItem.Items[0].Rarity,
 		Level:       strconv.Itoa(infoItem.Items[0].Level),
